@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>교육용 EMR 모의 화면</title>
+<style>
+:root{--bg:#0c111a;--panel:#141a26;--line:#2a3447;--txt:#e6ebf5;--mut:#8a96ad;--acc:#4a7bd8;--hi:#f2c94c;--bg2:#0f1520;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0c111a}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--txt);font:13px/1.4 "Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;min-height:560px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#000;border-bottom:2px solid #7a2438;font-size:12px;color:var(--mut)}
+.top b{color:#fff;font-size:15px;letter-spacing:.5px}
+.top .badge{background:#2d4a86;color:#fff;border-radius:10px;padding:2px 14px}
+.body{flex:1;display:flex;min-height:0}
+.rail{width:64px;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto}
+.rb{width:56px;border:0;background:none;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;font-size:11px;font-family:inherit;opacity:.45;cursor:not-allowed}
+.rb svg{width:26px;height:26px}
+.rb.on{opacity:1;color:#fff;cursor:pointer;border-radius:6px}
+.rb.on:hover{background:#1d2740}
+.rb.on svg{color:var(--hi)}
+.side{width:170px;background:var(--panel);border-right:1px solid var(--line);padding:8px;display:flex;flex-direction:column;gap:8px}
+.pt{display:flex;gap:8px;align-items:flex-start}
+.ph{width:58px;height:70px;background:linear-gradient(#c05fc6,#8c3b95);display:flex;align-items:flex-end;justify-content:center;border-radius:2px;overflow:hidden}
+.ph svg{width:48px;height:60px}
+.pt .n{font-weight:700;font-size:14px}
+.pt .s{font-size:12px;color:var(--mut)}
+.pt .m{font-size:11.5px;margin-top:2px}
+.ic{display:flex;gap:6px;margin:4px 0}
+.ic i{width:32px;height:32px;border-radius:7px;display:block}
+.sel{font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.sel div{display:flex;justify-content:space-between;align-items:center}
+.sel span.v{background:#202a3d;border:1px solid var(--line);padding:1px 8px;min-width:50px;color:var(--txt)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.h1,.h2{display:flex;align-items:center;gap:18px;padding:7px 14px;white-space:nowrap;overflow:hidden;font-size:12.5px}
+.h1{background:#10172a;border-bottom:1px solid var(--line);color:var(--mut)}
+.h2{background:#0e1424;border-bottom:1px solid var(--line)}
+.h2 b{color:#fff;font-size:13.5px}
+.room{color:var(--hi)}
+.tag{margin-left:auto;display:flex;gap:6px}
+.tag span{background:#1b2744;border:1px solid var(--line);padding:2px 10px;color:#cdd8ee}
+.work{flex:1;display:flex;align-items:center;justify-content:center;color:var(--mut);text-align:center;padding:20px}
+.work h2{color:var(--txt);margin:0 0 6px}
+/* menu overlay */
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:9}
+#ov.show{display:flex}
+.dlg{width:min(980px,100%);height:min(620px,100%);background:#151922;border:2px solid #3f5fae;border-radius:3px;padding:20px 28px;display:flex;flex-direction:column}
+.dh{display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px}
+.dh label{display:flex;align-items:center;gap:5px}
+.dh .sp{flex:1}
+.dh input[type=text]{background:#0f131b;border:1px solid var(--acc);color:#fff;padding:4px 8px;width:200px;font-family:inherit}
+.btn{background:#242b3a;border:1px solid var(--line);color:#fff;padding:4px 12px;cursor:pointer;font-family:inherit}
+.btn.p{background:linear-gradient(#5c78d6,#3a52a8);border-color:#6d86e0}
+.rs{display:flex;justify-content:space-between;align-items:center;padding:12px 0 8px;font-size:13px}
+.rs em{font-style:normal;color:#7fb0ff}
+.grid{display:flex;gap:34px;flex-wrap:wrap;padding:24px 8px;overflow:auto;align-content:flex-start}
+.tile{width:110px;border:0;background:none;color:#fff;font-family:inherit;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:6px;border-radius:8px}
+.tile:hover{background:#1f2a45}
+.tile .ico{width:52px;height:52px;border-radius:11px;display:flex;align-items:center;justify-content:center;position:relative}
+.tile .ico svg{width:34px;height:34px}
+.o{background:linear-gradient(#8a8f98,#2b2e33)}
+.l{background:linear-gradient(#4aa8ff,#1b64d1)}
+.red{position:absolute;right:-4px;bottom:-4px;background:#d92b3f;border-radius:50%;width:18px;height:18px;font-size:7px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.none{color:var(--mut);padding:30px 8px;display:none}
+
+#ow{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
+#ow.show{display:flex}
+.win{width:min(1180px,100%);height:min(780px,100%);background:#0f1420;border:1px solid #2f4a8a;display:flex;flex-direction:column;overflow:auto}
+.wt{background:linear-gradient(#2b5bb8,#18306b);color:#fff;padding:7px 12px;display:flex;justify-content:space-between;font-size:13px;flex:none}
+.wt button{background:none;border:0;color:#fff;cursor:pointer;font-size:15px}
+.wb{flex:1;display:flex;min-width:900px;min-height:0}
+.tabs{width:34px;background:#0b101a;display:flex;flex-direction:column;gap:4px;padding:6px 3px;font-size:11px;color:var(--mut)}
+.tabs div{writing-mode:vertical-rl;text-align:center;padding:6px 0;opacity:.45;letter-spacing:2px}
+.tabs div.a{opacity:1;color:#fff;background:#1d3566;border-radius:4px}
+.lp{width:46%;padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto;border-right:1px solid var(--line)}
+.rp{flex:1;display:flex;flex-direction:column;padding:8px;gap:8px;min-width:0}
+.box{border:1px solid var(--line);background:#121a29;padding:7px 9px;display:flex;align-items:center;gap:10px}
+.box.c{justify-content:center}
+.dis{opacity:.4;pointer-events:none}
+.rd{width:12px;height:12px;border-radius:50%;background:#080b11;border:1px solid #33405a;display:inline-block;vertical-align:-2px;margin-right:4px}
+.rd.on{border:3px solid #0a0e17;background:#2f7bff;box-shadow:0 0 0 1px #2f7bff}
+.sel{border:1px solid var(--line);background:#0b111c;padding:3px 8px;min-width:110px;display:flex;justify-content:space-between;gap:8px;cursor:pointer;color:#fff}
+.sel.w{flex:1}.sel.f{flex:1}
+.sel:hover{border-color:var(--acc)}
+.sec{border-left:4px solid #2f7bff;padding-left:7px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:5px}
+.gb{background:#1d6b3d;color:#fff;border:0;padding:3px 10px;font-family:inherit}
+.gb.act{cursor:pointer}
+table.t{width:100%;border-collapse:collapse;font-size:12px}
+.t th{background:#1b2540;padding:5px;font-weight:400;border:1px solid var(--line)}
+.t td{padding:3px;border:1px solid var(--line);height:30px}
+.t td .sel{min-width:0}
+.dl{background:#a82a2a;color:#fff;border:0;padding:3px 8px}
+.em{border:1px solid var(--line);height:70px;background:#101828}
+.col{background:#1b2540;padding:6px 9px;border:1px solid var(--line);display:flex;justify-content:space-between;color:var(--mut)}
+.lf{margin-top:auto;display:flex;justify-content:space-between;padding-top:6px}
+.bt{background:#202a3d;border:1px solid var(--line);color:#fff;padding:4px 12px;font-family:inherit}
+.bt.act{cursor:pointer;background:#1d6b3d}
+.tb{display:flex;gap:14px;font-size:11px;color:var(--mut);justify-content:flex-end;padding:2px 0}
+.ls{display:flex;gap:4px;align-items:center}
+.ls b{width:26px;height:24px;color:#fff;display:flex;align-items:center;justify-content:center}
+.ls .fld{flex:1;background:#0b111c;height:24px;border:1px solid var(--line)}
+.grid2{flex:1;border:1px solid var(--line);background:#0c1220;overflow:auto}
+.gr{display:flex;align-items:center;gap:10px;padding:6px 10px;border-bottom:1px solid #1b2438;min-height:32px;font-weight:700;font-size:12.5px}
+.gr.h{background:#1b2540;color:var(--mut);font-weight:400;justify-content:center}
+.ck{width:13px;height:13px;border:1px solid #445;background:#080b11;display:inline-block;flex:none}
+.ck.on{background:#2f7bff;border-color:#2f7bff}
+.rf{display:flex;justify-content:flex-end;gap:6px}
+.rf .bt.sg{background:#b02a2a}
+.rf .bt.dc{background:#b86a1b}
+#dd{position:fixed;z-index:40;background:#0f1522;border:1px solid var(--acc);display:none;max-height:260px;overflow:auto}
+#dd div{padding:8px 10px;cursor:pointer;color:#fff;font-size:13px;min-height:34px}
+#dd div:hover{background:#243456}
+#dd div.x{color:#5a6477;cursor:not-allowed}
+#dd div.x:hover{background:none}
+#msg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50}
+#msg.show{display:flex}
+#msg .m{background:#151b2a;border:2px solid #3f5fae;padding:28px 40px;text-align:center;font-size:15px}
+#msg button{margin-top:18px;background:#3a52a8;border:0;color:#fff;padding:6px 26px;cursor:pointer;font-family:inherit}
+
+.c3{background:linear-gradient(#e9b949,#a9761a)}
+.qi{width:100%;background:#2a3a66;border:0;color:#fff;padding:4px;text-align:center;font-family:inherit}
+.ov2{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:14px}
+.ov2.show{display:flex}
+#cw{z-index:22}#fw{z-index:24}#vw{z-index:26}
+.pad{padding:12px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+.rw{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#121a29;border:1px solid var(--line);padding:8px 10px}
+.rw .in{background:#0b111c;border:1px solid var(--line);padding:3px 8px;min-width:90px}
+.tb2{width:100%;border-collapse:collapse;font-size:12.5px}
+.tb2 th{background:#1b2540;padding:5px;font-weight:400;border:1px solid var(--line)}
+.tb2 td{padding:6px 8px;border:1px solid var(--line)}
+.fb{display:flex;justify-content:flex-end;gap:8px;padding:8px 12px;border-top:1px solid var(--line);flex:none;align-items:center}
+.bt.t1{background:#1c6f84}.bt.t1.act,.bt.act2{cursor:pointer}
+.bt.rd2{background:#b86a1b;cursor:pointer}.bt.bl{background:#2a63c9;cursor:pointer}
+.tree{width:42%;border:1px solid var(--line);background:#0c1220;padding:8px;overflow:auto;font-size:13px;line-height:2}
+.tree div:before{content:"📁 "}
+.two{display:flex;gap:12px;flex:1;min-height:0}
+.vs{flex:1;overflow:auto;background:#5a5f66;padding:16px}
+.warn{background:#fff;color:#d00;font-size:11px;font-weight:700;padding:4px 10px;flex:none}
+.pgw{background:#fff;color:#222;width:min(560px,100%);margin:0 auto;padding:22px 30px;font-size:13px;line-height:1.6}
+.pgw h3{text-align:center;margin:6px 0}
+.pgw .info{display:flex;border:1px solid #888;margin:10px 0 16px;font-size:12px}
+.pgw .info span{padding:3px 8px;border-right:1px solid #aaa;flex:1}.pgw .info .k{background:#dde6f3;font-weight:700;flex:none}
+.rb1{border:2px solid #d33;padding:8px 10px;margin:10px 0;border-radius:3px;font-size:12.5px}
+.tl{display:flex;gap:4px;margin:12px 0;font-size:10.5px;text-align:center}.tl div{background:#e4e4e4;border:1px solid #999;padding:6px 4px}
+.sgb{display:flex;align-items:flex-end;gap:12px;margin:24px 0 10px;flex-wrap:wrap}
+#lw,#rcw{z-index:22}
+.c4{background:linear-gradient(#9b6bff,#5b2fc4)}
+#rct{display:block;width:100%;height:140px;border:1px solid #bbb;resize:none;font:14px/1.5 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#222;padding:8px;box-sizing:border-box;outline:none;background:#fff}
+#preset:hover{text-decoration:underline}
+.rr{white-space:pre-wrap;color:#444;font:14px/1.5 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;padding:6px 4px}
+#rch:not(:empty){border-top:1px solid #e3e3e3;margin-top:10px;padding-top:6px}
+.ra{font:12px "Malgun Gothic",sans-serif;margin-top:2px;display:flex;gap:10px;color:#6a7da8;white-space:normal}.ra a{cursor:pointer;text-decoration:underline}
+.re{width:100%;min-height:70px;border:1px solid #bbb;font:14px/1.5 "Malgun Gothic",sans-serif;padding:6px;box-sizing:border-box;color:#222;resize:vertical;background:#fff}
+.rl{font-size:11px;color:#6a7da8;margin-bottom:3px}
+.lts{display:flex;gap:6px;flex:none}
+.lts button{background:#1b2540;border:1px solid var(--line);color:var(--mut);padding:7px 20px;font-family:inherit;font-size:13px;cursor:pointer}
+.lts button.a{background:#2a63c9;color:#fff;border-color:#4a7bd8}
+.lt{width:100%;border-collapse:collapse;font-size:13.5px}
+.lt td,.lt th{border:1px solid #232d42;padding:5px 12px;text-align:center}
+.lt th{background:#1b2540;font-weight:400;color:var(--mut)}
+.lt td.g{text-align:left;background:#0f1520;white-space:nowrap}
+.lt .H{color:#f2c94c;font-weight:700}.lt .L{color:#19c3ff;font-weight:700}
+.opt{cursor:pointer}.opt.on{background:#fff1f1}.mk:before{content:"○ "}.opt.on .mk:before{content:"◉ ";color:#d33}
+canvas#sc{border:1px solid #666;background:#fff;touch-action:none;cursor:crosshair;width:300px;height:100px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top"><b>교육용 EMR</b><span>교육 시나리오 · 2026.10.16(금)</span><span class="badge">간호</span></div>
+  <div class="body">
+    <nav class="rail">
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Logout</button>
+      <button class="rb on" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>Menu</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6z"/></svg>Patient List</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-8M21 20H3"/></svg>Patient Summary</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v12l-4 4H5z"/></svg>Memo</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 6h14M5 12h14M5 18h14"/></svg>To-Do</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l9 6 9-6M3 8v10h18V8"/></svg>업무</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l10 17H2z"/></svg>CVR</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l8 0 8 8-8 8-8-8z"/></svg>Duty</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Setting</button>
+      <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg>Timer</button>
+    </nav>
+    <aside class="side">
+      <div class="pt">
+        <div class="ph"><svg viewBox="0 0 48 60"><circle cx="24" cy="20" r="11" fill="#fff"/><path d="M4 60c0-18 10-24 20-24s20 6 20 24z" fill="#fff"/></svg></div>
+        <div>
+          <div class="n">나분당</div>
+          <div class="s">M / 58</div>
+          <div class="m">171cm / 68kg</div>
+        </div>
+      </div>
+      <div class="ic"><i style="background:#a11"></i><i style="background:#e8661c"></i><i style="background:#2aa84a"></i><i style="background:#2d6fd6"></i></div>
+      <div class="sel">
+        <div>근무 DUTY <span class="v">D</span></div>
+        <div>My 관심환자 <span class="v">&nbsp;</span></div>
+        <div>☑ 현위치</div>
+      </div>
+    </aside>
+    <section class="main">
+      <div class="h1"><span>POD [ 0 ]</span><span>마취과</span><span>전신</span></div>
+      <div class="h2">
+        <span>2026-10-16 (1)</span>
+        <span>진단명 [ <b>Hepatocellular Carcinoma</b> ]</span>
+        <span>수술명 [ <b>Laparotomy Segmentectomy of liver</b> ]</span>
+        <span class="tag"><span>수술동의서</span><span>진단이력</span><span>수술이력</span></span>
+      </div>
+      <div class="work" id="work"><div><h2>Menu 버튼을 눌러 메뉴를 선택하세요</h2><div>교육용 모의 화면 · 활성 버튼: Menu</div></div></div>
+    </section>
+  </div>
+</div>
+
+<div id="ov">
+  <div class="dlg">
+    <div class="dh">
+      <span>Menu</span>
+      <label><input type="radio" name="v" checked> 기본</label>
+      <label><input type="radio" name="v"> 텍스트</label>
+      <span class="sp"></span>
+      <input type="text" id="q" placeholder="메뉴 검색" autocomplete="off">
+      <button class="btn" id="go">검색</button>
+    </div>
+    <div class="rs"><span id="rt"><em></em>전체 메뉴 <b id="cnt">4</b></span><button class="btn p" id="close">닫기</button></div>
+    <div class="grid" id="grid">
+      <button class="tile" data-n="오더발행(수혈)"><span class="ico o"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7" r="4"/><path d="M4 22c0-6 4-9 8-9s8 3 8 9z"/></svg><span class="red">Order</span></span>오더발행(수혈)</button>
+      <button class="tile" data-n="검사결과조회"><span class="ico l"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="2" transform="rotate(25 12 9)"/><path d="M6 20h12M8 16a5 5 0 008 3"/></svg></span>검사결과조회</button>
+    <button class="tile" data-n="전자동의서작성 및 조회"><span class="ico c3"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>전자동의서작성 및 조회</button>
+      <button class="tile" data-n="마취기록등록"><span class="ico c4"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 13h6M9 17h4"/><path d="M15 4v4h4"/></svg></span>마취기록등록</button>
+    </div>
+    <div class="none" id="none">검색 결과가 없습니다.</div>
+  </div>
+</div>
+
+<script>
+const ov=document.getElementById('ov'),q=document.getElementById('q'),tiles=[...document.querySelectorAll('.tile')];
+function open_(){ov.classList.add('show');q.value='';filter();q.focus()}
+function close_(){ov.classList.remove('show')}
+function filter(){
+  const k=q.value.trim();let c=0;
+  tiles.forEach(t=>{const m=!k||t.dataset.n.includes(k);t.style.display=m?'':'none';if(m)c++});
+  document.getElementById('cnt').textContent=c;
+  document.getElementById('rt').firstChild.textContent=k?k+' 검색결과 ':'전체 메뉴 ';
+  document.getElementById('none').style.display=c?'none':'block';
+}
+document.getElementById('menuBtn').onclick=open_;
+document.getElementById('close').onclick=close_;
+document.getElementById('go').onclick=filter;
+q.addEventListener('input',filter);
+q.addEventListener('keydown',e=>{if(e.key==='Enter')filter()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close_()});
+tiles.forEach(t=>t.onclick=()=>{
+  close_();
+  if(t.dataset.n.startsWith('오더발행')){openOrder();return}
+  if(t.dataset.n.startsWith('전자동의서')){openConsent();return}
+  if(t.dataset.n.startsWith('검사결과')){openLab();return}
+  if(t.dataset.n==='마취기록등록'){openRec();return}
+  document.getElementById('work').innerHTML='<div><h2>'+t.dataset.n+'</h2><div>(화면 준비 중 · 추후 구현 예정)</div></div>';
+});
+</script>
+
+<div id="ow"><div class="win">
+ <div class="wt"><span>오더발행 [ 나분당 / 12345678 ]</span><button id="wx">✕</button></div>
+ <div class="wb">
+  <div class="tabs"><div>조회</div><div>분류</div><div>세트</div><div>표준지침</div><div>입원</div><div>퇴원</div><div class="a">수혈</div><div>항생제</div><div>수술</div><div>접종</div><div>지참약</div></div>
+  <div class="lp" id="lp"></div>
+  <div class="rp">
+   <div class="tb dis"><span>그룹정렬</span><span>항목추가</span><span>대기오더</span><span>CRIS</span><span>다제약물</span><span>약물조정</span><span>약품식별</span><span>항응고</span><span>급여변경</span><span>약반납</span><span>환자부담</span></div>
+   <div class="ls dis"><b style="background:#b3321c">A</b><b style="background:#1b7a64">D</b><b style="background:#1b7a64">E</b><b style="background:#1b7a64">T</b><b style="background:#1b7a64">S</b><b style="background:#1b7a64">F</b><span class="fld"></span><span>☑ 원내보유약만 검색</span></div>
+   <div class="ls dis"><span class="fld" style="max-width:130px;padding:3px 8px">2026-10-16</span><span class="fld" style="max-width:130px;padding:3px 8px">수술중(Intra OP)</span><span class="fld" style="padding:3px 8px">AN 8</span><span class="bt">조회</span></div>
+   <div class="grid2" id="gd"></div>
+   <div class="rf" id="rf"></div>
+  </div>
+ </div>
+</div></div>
+
+<div id="cw" class="ov2"><div class="win" style="width:min(1000px,100%);height:min(620px,100%)">
+ <div class="wt"><span>전자동의서 작성 및 조회 [ 나분당 / 12345678 ]</span><button class="cx">✕</button></div>
+ <div class="pad">
+  <div class="rw dis"><span>환자번호 <span class="in">12345678</span> <span class="in">나분당</span></span><span>유형 ☑전체 ☑검사 ☑처치 ☑수술</span><span>경색 ○오더 ○수술 <span class="in" style="min-width:160px">&nbsp;</span></span><span class="bt t1">조회</span></div>
+  <div class="sec"><span>작성 대상 동의서 목록</span></div>
+  <div style="flex:1;overflow:auto"><table id="ct" class="tb2 dis"><tr><th style="width:40px">#</th><th>동의서명</th><th style="width:130px">작성대상 오더건수</th><th style="width:130px">작성대상 수술건수</th></tr><tr><td>1</td><td>전신마취 동의서</td><td align="center">0</td><td align="center">1</td></tr><tr><td>2</td><td>수혈 동의서</td><td align="center">1</td><td align="center">0</td></tr></table></div>
+  <div class="col dis"><span>⌄ 모의/수술 연결 정보</span></div>
+ </div>
+ <div class="fb"><span class="bt t1 act2" id="lst" style="cursor:pointer">🔍 전자동의서 서식 목록 조회</span><span class="bt dis" style="background:#1d6b3d">+ 전자동의서 작성</span></div>
+</div></div>
+
+<div id="fw" class="ov2"><div class="win" style="width:min(1080px,100%);height:min(680px,100%)">
+ <div class="wt"><span>전자동의서 서식 목록</span><button class="fx">✕</button></div>
+ <div class="pad"><div class="two">
+  <div style="width:42%;display:flex;flex-direction:column;gap:8px"><div class="rw dis"><span class="in" style="flex:1">&nbsp;</span><span class="bt">+ 추가</span><span class="bt">수정</span><span class="bt">삭제</span></div>
+   <div class="tree dis" style="width:auto;flex:1"><div>개인 SET</div><div>공통</div><div>62병동</div><div>가정의학과</div><div>감염내과</div><div>내과</div><div>내과계중환자실</div><div>마취통증의학과</div><div>외과</div><div>응급의학과</div></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+   <div class="rw dis"><span>검색조건 <span class="in" style="min-width:140px">전체 동의서 ▾</span></span><span>서식명 <span class="in" style="min-width:160px">응급수혈</span></span><span class="bt t1">조회</span></div>
+   <table class="tb2"><tr><th style="width:30px"></th><th>서식지명</th><th style="width:110px">내용보기</th></tr><tr><td><i class="ck" id="fck" style="cursor:pointer"></i></td><td>응급수혈요청서(교차시험 미완료 응급혈액 출고요청서)</td><td align="center" style="white-space:nowrap"><span class="bt dis" style="white-space:nowrap">내용보기</span></td></tr></table>
+  </div></div></div>
+ <div class="fb"><span class="bt dis">SET등록</span><span class="bt dis">선택복사</span><span style="flex:1"></span><span class="bt bl dis" id="pick">✋ 선택</span><span class="bt dis">출력</span><span class="bt dis">엑셀</span><span class="bt rd2 fx">✕ 닫기</span></div>
+</div></div>
+
+<div id="vw" class="ov2"><div class="win" style="width:min(900px,100%);height:min(720px,100%)">
+ <div class="wt"><span>전자동의서 작성 [ 나분당 / 12345678 ]</span><button class="vx">✕</button></div>
+ <div class="warn">※ 서식 전송 내용은 반드시 저장 여부를 확인하시기 바랍니다. 환자번호: 12345678 , 환자명: 나분당</div>
+ <div class="vs"><div class="pgw">
+  <h3>응급수혈요청서(교차시험 미완료 응급혈액 출고요청서)</h3>
+  <div style="text-align:center;font-size:12px">* 보건복지부 지침에 따른 서식임</div>
+  <div class="info"><span class="k">등록번호</span><span>12345678</span><span class="k">성명</span><span>나분당</span><span class="k">성별</span><span>남</span><span class="k">나이</span><span>58세</span></div>
+  <b>요청 혈액제제</b>
+  <div style="display:flex;flex-wrap:wrap;gap:4px 40px;margin:6px 0 14px;font-size:12.5px"><span>☑ 농축적혈구</span><span>☐ 전혈</span><span>☐ 혈소판제제</span><span>☐ 기타 (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span></div>
+  <b>▣ 의사 1</b>
+  <p>본인은 수혈자(환자)의 생명보호를 위해 긴급하게 수혈이 필요하다고 판단하여 수혈전검사 <b>교차시험이 완료되지 않았음</b>에도 불구하고 우선 혈액을 출고하여 줄 것을 요청합니다.</p>
+  <div class="rb1 opt"><span class="mk"></span>이러한 상황을 수혈자(환자) 혹은 수혈자(환자)의 가족 등 보호자에게 충분히 설명하였고, 우선 수혈을 실시하는 것에 대해 환자/보호자도 동의하였음을 확인합니다.</div>
+  <div class="rb1 opt" style="border-color:#222"><span class="mk"></span>수혈자(환자) 혹은 수혈자(환자)의 가족 등 보호자에게 연락을 시도했으나 닿지 않아 우선 수혈을 실시하는 것에 대해 담당의사2가 동의하였음을 확인합니다.</div>
+  <div style="height:70px"></div>
+  <div style="font-size:12px">* 교차시험은 혈액이 출고된 이후에도 진행되며 여기서 부적합이 발견될 경우 혈액은행에서 즉시 연락드립니다.<br>* 혈액출고 소요시간</div>
+  <div class="tl"><div>접수 및 혈청분리<br>5~10분</div><div style="flex:1.4">1단계 교차시험<br>(실온식염수법) 5분</div><div style="flex:2">2단계 교차시험<br>(37℃ 일부항법) 15분</div><div style="flex:1.4">3단계 교차시험<br>(항글로불린법) 5분</div></div>
+  <div style="text-align:center;font-size:12px;margin-bottom:8px">교차시험 완료 혈액 ↔ 교차시험미완료응급혈액</div>
+  <div style="text-align:center;font-size:12px">OO병원 진단검사의학과 혈액은행 (전화: 0000)</div>
+  <div style="text-align:center;margin:18px 0">작성일 : 2026 년 10 월 16 일</div>
+  <div class="sgb"><div><b>설명의사 : 김마취</b><div style="font-size:11px;color:#666">아래 칸 안에 서명해 주세요</div></div><canvas id="sc" width="300" height="100"></canvas><span class="bt" id="clr" style="cursor:pointer;background:#555">지우기</span></div>
+ </div></div>
+ <div class="fb"><span class="bt dis" id="vsg" style="background:#b02a2a;cursor:pointer">✎ 서명</span><span class="bt rd2 vx">✕ 닫기</span></div>
+</div></div>
+<div id="lw" class="ov2"><div class="win" style="width:min(900px,100%);height:min(720px,100%)"><div class="wt"><span>검사결과조회 [ 나분당 / 12345678 ]</span><button class="lx">✕</button></div><div class="pad"><div class="lts" id="lts"></div><div style="flex:1;overflow:auto" id="lb"></div></div></div></div>
+<div id="rcw" class="ov2"><div class="win" style="width:min(600px,100%);height:min(800px,100%)"><div class="wt"><span>기록</span><button class="rx">✕</button></div><div style="padding:7px 12px;background:#121a29;border-bottom:1px solid var(--line);font-size:12.5px;flex:none"><span id="preset" style="cursor:pointer;color:#7fb0ff">*수혈마취기록 프리셋 : 수혈 시 15분간 환자상태 관찰함. 수혈관련 특이사항 없음 (혈액제제 : )</span></div><div id="rcp" style="flex:1;background:#fff;margin:12px;overflow-y:auto;padding:10px 20px;min-height:0"><textarea id="rct"></textarea><div id="rch"></div></div><div class="fb"><span class="bt dis" id="rsg" style="background:#b02a2a;cursor:pointer">✎ 서명</span><span class="bt rd2 rx">✕ 닫기</span></div></div></div>
+<div id="dd"></div>
+<div id="msg"><div class="m"><div id="mt">혈액오더가 발행되었습니다</div><button id="mok">확인</button></div></div>
+<script>
+let S,HIST=[],EMG=false;const ZERO=()=>({qty:1,type:'',ord:'',urg:'',done:false,rows:[],signed:false});
+const OPT={
+ type:()=>[['RBC',1],['FFP',1],['Platelet',0],['Cryoprecipitate',0],['자가혈액 및 지정혈액',0],['기타',0]],
+ ord:()=>S.type==='FFP'?[['',1],['FFP',1],['FFP (RT)',0]]:[['',1],['RBC',1],['RBC (LD)',0],['RBC (LD and RT)',0],['RBC (RT)',0],['RBC (신생아분할 LD and RT)',0],['Washed RBC',0],['Washed RBC (RT)',0]],
+ urg:()=>{const f=S.type!=='FFP'?1:0;return [['',1],['긴급',f],['초긴급',f],['응급',f]]}
+};
+const sel=(t,k,x)=>`<div class="sel ${x?'dis':''}" ${k?`data-dd="${k}"`:''}><span>${t||'&nbsp;'}</span><b>▾</b></div>`;
+const rd=(on,l)=>`<span><i class="rd ${on?'on':''}"></i>${l}</span>`;
+function render(){
+ const t=S.type,o=S.ord,rs=S.done&&!t;let h='';
+ h+=`<div class="box c dis">${rd(rs,'병실/응급실/외래')}${rd(!rs,'수술장')}</div>`;
+ h+=`<div class="box dis" style="justify-content:space-between"><b>수혈동의서 있음</b><span>교차 시험용 검체 채혈 <span class="bt">필요없음</span></span></div>`;
+ if(rs) h+=`<div class="box"><span>종류선택</span>${sel('','type').replace('class="sel','class="sel w')}</div>`;
+ else h+=`<div class="box"><span>종류선택</span>${sel(t,'type').replace('class="sel','class="sel f')}<span class="bt dis">적응증선택</span><span class="dis">${rd(0,'예정용')}${rd(1,'출고용')}</span></div>`;
+ if(!rs) h+=`<div class="box dis" style="flex-direction:column;align-items:stretch"><div>수술예정일자 &nbsp; ${t?'2026-10-16':'__-__-__'}</div><div>수술명 &nbsp; <span class="sel" style="display:inline-flex;min-width:240px">&nbsp;</span></div></div>`;
+ h+=`<div class="sec"><span>수혈오더${t?` (${t}처방)`:''}</span><span class="gb">+ 추가</span></div>`;
+ if(!t&&!rs) h+=`<table class="t"><tr><th>수혈오더</th><th>보험</th><th>수량</th></tr><tr><td></td><td></td><td></td></tr></table>`;
+ else if(rs) h+=`<table class="t"><tr><th>#</th><th>수혈오더</th><th>보험</th><th>수량</th><th></th></tr><tr><td>1</td><td>${sel('',0,1)}</td><td>${sel('',0,1)}</td><td></td><td><span class="dl">🗑</span></td></tr></table>`;
+ else h+=`<table class="t"><tr><th>#</th><th>수혈오더</th><th>보험</th><th>수량</th><th>혈액요청시각</th><th>비고</th><th>긴급</th><th></th></tr><tr><td>1</td><td>${sel(o,'ord')}</td><td>${sel('',0,1)}</td><td>${o?`<input id="qt" class="qi" type="text" inputmode="numeric" maxlength="2" value="${S.qty}">`:''}</td><td>${o?sel('즉시(ASAP)',0,1):sel('',0,1)}</td><td></td><td>${o?sel(S.urg,'urg'):sel('',0,1)}</td><td><span class="dl dis">🗑</span></td></tr></table>`;
+ h+=`<div class="sec"><span>처치오더</span></div><div class="em"></div><div class="sec"><span>도움말</span></div><div class="em" style="height:34px"></div>`;
+ h+=`<div class="col"><span>› 수혈이력</span><span>수혈이력이 없습니다.</span></div><div class="col"><span>› 수혈제제</span><span>${t}</span></div>`;
+ h+=`<div class="lf"><span class="bt dis">도움말</span><span class="bt ${o?'act':'dis'}" id="cp">오더복사</span></div>`;
+ $('#lp').innerHTML=h;
+ let g=`<div class="gr h">처방명</div>`;
+ S.rows.forEach((r,i)=>g+=`<div class="gr" ${r.d?'style="opacity:.45"':''}><i class="ck ${r.c?'on':''}" ${r.d?'':`data-ck="${i}"`} style="cursor:pointer"></i><span>📄</span><span ${r.d?'style="text-decoration:line-through"':''}>${r.t}</span></div>`);
+ g+=`<div class="gr"><i class="ck on"></i><span>📄</span></div>`;
+ $('#gd').innerHTML=g;
+ const can=S.rows.some(r=>!r.d)&&!S.signed;
+ $('#rf').innerHTML=`<span class="bt sg ${can?'':'dis'}" id="sg">✎ 서명 (F12)</span><span class="bt dc ${S.rows.some(r=>r.c)?'':'dis'}" id="dcb" style="cursor:pointer">D/C</span>`;
+}
+const $=s=>document.querySelector(s);
+function openOrder(){S=ZERO();S.rows=HIST.map(r=>({...r,c:false}));S.signed=HIST.length>0;render();$('#ow').classList.add('show')}
+$('#wx').onclick=()=>{$('#ow').classList.remove('show');$('#dd').style.display='none'};
+$('#mok').onclick=()=>$('#msg').classList.remove('show');
+document.addEventListener('click',e=>{
+ const dd=$('#dd');
+ const el=e.target.closest('[data-dd]');
+ if(el){
+  const k=el.dataset.dd,r=el.getBoundingClientRect();
+  dd.innerHTML=OPT[k]().map(([v,on])=>`<div class="${on?'':'x'}" data-v="${v}" data-on="${on}">${v||'&nbsp;'}</div>`).join('');
+  dd.dataset.k=k;dd.style.left=r.left+'px';dd.style.top=r.bottom+'px';dd.style.minWidth=Math.max(r.width,110)+'px';dd.style.display='block';return;
+ }
+ const it=e.target.closest('#dd div');
+ if(it){
+  if(it.dataset.on==='1'){
+   const k=dd.dataset.k,v=it.dataset.v;
+   if(k==='type'){S.type=v;S.ord='';S.urg='';S.qty=1}
+   else if(k==='ord'){S.ord=v;S.urg='';S.qty=1}
+   else S.urg=v;
+   render();dd.style.display='none';
+  }
+  return;
+ }
+ dd.style.display='none';
+ const ck=e.target.closest('[data-ck]');
+ if(ck){const r=S.rows[+ck.dataset.ck];r.c=!r.c;render();return}
+ if(e.target.closest('#dcb:not(.dis)')){S.rows.forEach(r=>{if(r.c){r.d=true;r.c=false}});HIST=S.rows.filter(r=>r.s);render();showMsg('오더발행이 D/C되었습니다.');return}
+ if(e.target.closest('#cp.act')){clampQ();
+  S.rows.push({c:false,u:S.urg,t:`${S.urg?'['+S.urg+'] ':''}${S.ord} X ${S.qty}[수술예정일: 2026-10-16] 혈액요청시각:즉시(ASAP)`});
+  S.type='';S.ord='';S.urg='';S.qty=1;S.done=true;S.signed=false;render();
+ }
+ if(e.target.closest('#sg:not(.dis)')){if(!EMG&&S.rows.some(r=>!r.d&&!r.s&&r.u)){showMsg('응급수혈 동의서가 작성되지 않았습니다');return}S.signed=true;S.rows.forEach(r=>r.s=true);HIST=S.rows.slice();render();showMsg('혈액오더가 발행되었습니다')}
+});
+const LAB={
+'Pre-OP':{d:'2026-10-15',g:'2026-10-15 08:10 [일반검사]',r:[['WBC','6.8',''],['Hb','12.1','L'],['Hct','36.5','L'],['Platelet','138','L'],['PT (INR)','1.12',''],['AST','58','H'],['ALT','52','H'],['T.bilirubin','0.9',''],['Albumin','3.9',''],['Creatinine','0.82',''],['eGFR','132',''],['Na','139',''],['K','4.1','']]},
+'#1 ABGA':{d:'2026-10-16',g:'2026-10-16 08:50 [현장검사]',r:[['pH','7.395',''],['pCO₂','44.3',''],['pO₂','169.7','H'],['HCO3-','27.36',''],['BE','2.7','H'],['O₂SAT','97','H'],['Hct','34','L'],['Na','132.4','L'],['K','4.42',''],['Cl','98.4',''],['Glu','126','H'],['iCa','1.17',''],['iMg','0.63',''],['Lactate','0.5','L'],['Hb','10.8','L']]},
+'#2 ABGA':{d:'2026-10-16',g:'2026-10-16 10:00 [현장검사]',r:[['pH','7.312','L'],['pCO₂','43.6',''],['pO₂','188.0','H'],['HCO3-','20.8','L'],['BE','-4.6','L'],['O₂SAT','99','H'],['Hct','20','L'],['Na','137',''],['K','4.9',''],['Cl','104.0',''],['Glu','165','H'],['iCa','1.02','L'],['iMg','0.60',''],['Lactate','3.4','H'],['Hb','6.8','L']]},
+'#3 ABGA':{d:'2026-10-16',g:'2026-10-16 11:00 [현장검사]',r:[['pH','7.361',''],['pCO₂','40.5',''],['pO₂','176.0','H'],['HCO3-','22.6',''],['BE','-1.5',''],['O₂SAT','99','H'],['Hct','26','L'],['Na','138',''],['K','4.6',''],['Cl','105.0',''],['Glu','148','H'],['iCa','0.96','L'],['iMg','0.55','L'],['Lactate','1.8',''],['Hb','8.6','L']]}};
+const VW=new Set();function showLab(k){if(k)VW.add(k);
+ $('#lts').innerHTML=Object.keys(LAB).filter((n,i)=>i<LABN&&(i===0||VW.has(Object.keys(LAB)[i-1]))).map(n=>`<button class="${n===k?'a':''}" data-lt="${n}">${n}</button>`).join('');
+ if(!k){$('#lb').innerHTML='<table class="lt"><tr><th>검사일시</th><th>접수일</th><th>결과일</th><th>검사명</th><th>결과</th></tr></table><div style="text-align:center;color:var(--mut);padding:60px 0;opacity:.6">위 메뉴에서 조회할 검사를 선택하세요</div>';return}
+ const L=LAB[k];
+ $('#lb').innerHTML=`<table class="lt"><tr><th>검사일시</th><th>접수일</th><th>결과일</th><th>검사명</th><th>결과</th></tr>`+L.r.map((r,i)=>`<tr>${i?'':`<td class="g" rowspan="${L.r.length}">${L.g}</td>`}<td>${L.d}</td><td>${L.d}</td><td class="${r[2]}">${r[0]}</td><td class="${r[2]}">${r[1]}</td></tr>`).join('')+'</table>';
+}
+let LABN=0;function openLab(){LABN=Math.min(LABN+1,4);showLab(null);show('#lw',true)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lt]');if(b)showLab(b.dataset.lt);if(e.target.closest('.lx'))show('#lw',false)});
+function grow(){const t=$('#rct'),p=$('#rcp');t.style.height='auto';const need=t.scrollHeight+2,max=p.clientHeight-20;t.style.height=Math.min(Math.max(need,140),max)+'px';t.style.overflowY=need>max?'auto':'hidden'}
+function updRec(){$('#rsg').classList.toggle('dis',!$('#rct').value.trim());grow()}
+const RECS=[];let EDI=-1,DEL=-1;const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function showRecs(){$('#rch').innerHTML=RECS.map((r,i)=>EDI===i?`<div class="rr"><textarea class="re" id="rei">${esc(r)}</textarea><div class="ra"><a data-rs="${i}">저장</a><a data-rc="1">취소</a></div></div>`:`<div class="rr">${esc(r)}<div class="ra">${DEL===i?`삭제하시결습니까? <a data-dy="${i}">예</a><a data-dn="1">아니오</a>`:`<a data-re="${i}">수정</a><a data-rd="${i}">삭제</a>`}</div></div>`).join('')}
+document.addEventListener('click',e=>{const g=a=>{const el=e.target.closest('['+a+']');return el?(+el.getAttribute(a)||0):null};let v;
+ if((v=g('data-re'))!==null){EDI=v;DEL=-1;showRecs()}
+ else if((v=g('data-rd'))!==null){DEL=v;EDI=-1;showRecs()}
+ else if((v=g('data-dy'))!==null){RECS.splice(v,1);DEL=-1;showRecs()}
+ else if(e.target.closest('[data-dn]')){DEL=-1;showRecs()}
+ else if((v=g('data-rs'))!==null){const t=$('#rei').value.trim();if(t)RECS[v]=t;else RECS.splice(v,1);EDI=-1;showRecs()}
+ else if(e.target.closest('[data-rc]')){EDI=-1;showRecs()}
+});
+function openRec(){EDI=-1;DEL=-1;show('#rcw',true);showRecs();updRec();$('#rct').focus()}
+document.addEventListener('input',e=>{if(e.target.id==='rct')updRec()});
+document.addEventListener('click',e=>{
+ if(e.target.closest('.rx'))show('#rcw',false);
+ if(e.target.closest('#preset')){const t=$('#rct'),s='수혈 시 15분간 환자상태 관찰함.\n수혈관련 특이사항 없음\n(혈액제제 : )';t.value=t.value.trim()?t.value.replace(/\s+$/,'')+'\n'+s:s;updRec();t.focus();t.setSelectionRange(t.value.length-1,t.value.length-1)}
+ if(e.target.closest('#rsg:not(.dis)')){const t=$('#rct');RECS.push(t.value.trim());t.value='';updRec();showRecs();showMsg('마취기록이 서명되었습니다')}
+});
+window.addEventListener('resize',()=>{if($('#rcw').classList.contains('show'))grow()});
+function addRow(){if($('#r3'))return;$('#ct tbody').insertAdjacentHTML('beforeend','<tr id="r3"><td>3</td><td>응급수혈 동의서</td><td align="center">0</td><td align="center">0</td></tr>')}
+function showMsg(t){$('#mt').textContent=t;$('#msg').classList.add('show')}
+function clampQ(){const q=$('#qt');if(!q)return;let n=parseInt(q.value)||1;n=Math.min(99,Math.max(1,n));S.qty=n;q.value=n}
+document.addEventListener('input',e=>{if(e.target.id==='qt'){e.target.value=e.target.value.replace(/\D/g,'');const n=parseInt(e.target.value);if(n)S.qty=Math.min(99,n)}});
+document.addEventListener('focusout',e=>{if(e.target.id==='qt')clampQ()});
+const show=(id,on)=>$(id).classList.toggle('show',on);
+function openConsent(){show('#cw',true)}
+document.addEventListener('click',e=>{
+ const t=e.target;
+ if(t.closest('.cx'))show('#cw',false);
+ if(t.closest('#lst')){show('#fw',true);$('#fck').classList.remove('on');$('#pick').classList.add('dis')}
+ if(t.closest('#fck')){const c=$('#fck');c.classList.toggle('on');$('#pick').classList.toggle('dis',!c.classList.contains('on'))}
+ const op=t.closest('.opt');if(op){op.classList.toggle('on');updSg()}
+ if(t.closest('.fx'))show('#fw',false);
+ if(t.closest('#pick')){show('#vw',true);$('.vs').scrollTop=0;document.querySelectorAll('.opt').forEach(o=>o.classList.remove('on'));clearSig()}
+ if(t.closest('.vx'))show('#vw',false);
+ if(t.closest('#clr'))clearSig();
+ if(t.closest('#vsg')){EMG=true;addRow();showMsg('동의서가 작성되었습니다')}
+});
+const cv=$('#sc'),cx=cv.getContext('2d');let drawing=false;
+let inked=false;function updSg(){$('#vsg').classList.toggle('dis',!(inked&&document.querySelectorAll('.opt.on').length===2))}
+function clearSig(){cx.clearRect(0,0,cv.width,cv.height);inked=false;updSg()}
+function pt(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]}
+cv.addEventListener('pointerdown',e=>{drawing=true;cv.setPointerCapture(e.pointerId);const[x,y]=pt(e);cx.lineWidth=2;cx.lineCap='round';cx.strokeStyle='#111';cx.beginPath();cx.moveTo(x,y);cx.lineTo(x+.1,y+.1);cx.stroke();inked=true;updSg()});
+cv.addEventListener('pointermove',e=>{if(!drawing)return;const[x,y]=pt(e);cx.lineTo(x,y);cx.stroke()});
+['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>drawing=false));
+</script>
+</body>
