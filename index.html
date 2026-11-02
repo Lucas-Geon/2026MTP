@@ -145,7 +145,11 @@ table.t{width:100%;border-collapse:collapse;font-size:12px}
 .rb1{border:2px solid #d33;padding:8px 10px;margin:10px 0;border-radius:3px;font-size:12.5px}
 .tl{display:flex;gap:4px;margin:12px 0;font-size:10.5px;text-align:center}.tl div{background:#e4e4e4;border:1px solid #999;padding:6px 4px}
 .sgb{display:flex;align-items:flex-end;gap:12px;margin:24px 0 10px;flex-wrap:wrap}
-#lw,#rcw{z-index:22}
+#lw,#rcw,#bw{z-index:22}
+.c5{background:linear-gradient(#e0555f,#9c1d2a)}
+.bi{width:100%;min-width:72px;background:#0b111c;border:1px solid var(--line);color:#fff;padding:4px;font-family:inherit;color-scheme:dark}
+.bi:disabled{opacity:.3}
+.bb{padding:6px 14px;border:0;color:#fff;font-family:inherit;cursor:pointer;background:#2a63c9;white-space:nowrap}.bb.k{background:#1d6b3d;cursor:default}
 .c4{background:linear-gradient(#9b6bff,#5b2fc4)}
 #rct{display:block;width:100%;height:140px;border:1px solid #bbb;resize:none;font:14px/1.5 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#222;padding:8px;box-sizing:border-box;outline:none;background:#fff}
 #preset:hover{text-decoration:underline}
@@ -168,7 +172,7 @@ canvas#sc{border:1px solid #666;background:#fff;touch-action:none;cursor:crossha
 </head>
 <body>
 <div id="app">
-  <div class="top"><b>교육용 EMR</b><span>교육 시나리오 · 2026.10.16(금)</span><span class="badge">간호</span></div>
+  <div class="top"><b>교육용 EMR</b><span id="tdy">교육 시나리오 · 2026.10.16(금)</span><span class="badge">간호</span></div>
   <div class="body">
     <nav class="rail">
       <button class="rb" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Logout</button>
@@ -222,12 +226,13 @@ canvas#sc{border:1px solid #666;background:#fff;touch-action:none;cursor:crossha
       <input type="text" id="q" placeholder="메뉴 검색" autocomplete="off">
       <button class="btn" id="go">검색</button>
     </div>
-    <div class="rs"><span id="rt"><em></em>전체 메뉴 <b id="cnt">4</b></span><button class="btn p" id="close">닫기</button></div>
+    <div class="rs"><span id="rt"><em></em>전체 메뉴 <b id="cnt">5</b></span><button class="btn p" id="close">닫기</button></div>
     <div class="grid" id="grid">
       <button class="tile" data-n="오더발행(수혈)"><span class="ico o"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7" r="4"/><path d="M4 22c0-6 4-9 8-9s8 3 8 9z"/></svg><span class="red">Order</span></span>오더발행(수혈)</button>
       <button class="tile" data-n="검사결과조회"><span class="ico l"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="2" transform="rotate(25 12 9)"/><path d="M6 20h12M8 16a5 5 0 008 3"/></svg></span>검사결과조회</button>
     <button class="tile" data-n="전자동의서작성 및 조회"><span class="ico c3"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>전자동의서작성 및 조회</button>
       <button class="tile" data-n="마취기록등록"><span class="ico c4"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 13h6M9 17h4"/><path d="M15 4v4h4"/></svg></span>마취기록등록</button>
+      <button class="tile" data-n="수혈간호기록"><span class="ico c5"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M12 3c3 4 6 7 6 11a6 6 0 01-12 0c0-4 3-7 6-11z"/><path d="M12 11v6M9 14h6"/></svg></span>수혈간호기록</button>
     </div>
     <div class="none" id="none">검색 결과가 없습니다.</div>
   </div>
@@ -256,6 +261,7 @@ tiles.forEach(t=>t.onclick=()=>{
   if(t.dataset.n.startsWith('전자동의서')){openConsent();return}
   if(t.dataset.n.startsWith('검사결과')){openLab();return}
   if(t.dataset.n==='마취기록등록'){openRec();return}
+  if(t.dataset.n==='수혈간호기록'){openBl();return}
   document.getElementById('work').innerHTML='<div><h2>'+t.dataset.n+'</h2><div>(화면 준비 중 · 추후 구현 예정)</div></div>';
 });
 </script>
@@ -293,7 +299,7 @@ tiles.forEach(t=>t.onclick=()=>{
    <div class="tree dis" style="width:auto;flex:1"><div>개인 SET</div><div>공통</div><div>62병동</div><div>가정의학과</div><div>감염내과</div><div>내과</div><div>내과계중환자실</div><div>마취통증의학과</div><div>외과</div><div>응급의학과</div></div></div>
   <div style="flex:1;display:flex;flex-direction:column;gap:8px">
    <div class="rw dis"><span>검색조건 <span class="in" style="min-width:140px">전체 동의서 ▾</span></span><span>서식명 <span class="in" style="min-width:160px">응급수혈</span></span><span class="bt t1">조회</span></div>
-   <table class="tb2"><tr><th style="width:30px"></th><th>서식지명</th><th style="width:110px">내용보기</th></tr><tr><td><i class="ck" id="fck" style="cursor:pointer"></i></td><td>응급수혈요청서(교차시험 미완료 응급혈액 출고요청서)</td><td align="center" style="white-space:nowrap"><span class="bt dis" style="white-space:nowrap">내용보기</span></td></tr></table>
+   <table class="tb2"><tr><th style="width:30px"></th><th>서식지명</th><th style="width:110px">내용보기</th></tr><tr><td><i class="ck" id="fck" style="cursor:pointer"></i></td><td id="fnm" style="cursor:pointer">응급수혈요청서(교차시험 미완료 응급혈액 출고요청서)</td><td align="center" style="white-space:nowrap"><span class="bt dis" style="white-space:nowrap">내용보기</span></td></tr></table>
   </div></div></div>
  <div class="fb"><span class="bt dis">SET등록</span><span class="bt dis">선택복사</span><span style="flex:1"></span><span class="bt bl dis" id="pick">✋ 선택</span><span class="bt dis">출력</span><span class="bt dis">엑셀</span><span class="bt rd2 fx">✕ 닫기</span></div>
 </div></div>
@@ -323,10 +329,11 @@ tiles.forEach(t=>t.onclick=()=>{
 </div></div>
 <div id="lw" class="ov2"><div class="win" style="width:min(900px,100%);height:min(720px,100%)"><div class="wt"><span>검사결과조회 [ 나분당 / 12345678 ]</span><button class="lx">✕</button></div><div class="pad"><div class="lts" id="lts"></div><div style="flex:1;overflow:auto" id="lb"></div></div></div></div>
 <div id="rcw" class="ov2"><div class="win" style="width:min(600px,100%);height:min(800px,100%)"><div class="wt"><span>기록</span><button class="rx">✕</button></div><div style="padding:7px 12px;background:#121a29;border-bottom:1px solid var(--line);font-size:12.5px;flex:none"><span id="preset" style="cursor:pointer;color:#7fb0ff">*수혈마취기록 프리셋 : 수혈 시 15분간 환자상태 관찰함. 수혈관련 특이사항 없음 (혈액제제 : )</span></div><div id="rcp" style="flex:1;background:#fff;margin:12px;overflow-y:auto;padding:10px 20px;min-height:0"><textarea id="rct"></textarea><div id="rch"></div></div><div class="fb"><span class="bt dis" id="rsg" style="background:#b02a2a;cursor:pointer">✎ 서명</span><span class="bt rd2 rx">✕ 닫기</span></div></div></div>
+<div id="bw" class="ov2"><div class="win" style="width:min(1080px,100%);height:min(560px,100%)"><div class="wt"><span>수혈간호기록 [ 나분당 / 12345678 ]</span><button class="bx">✕</button></div><div class="pad"><div id="bb" style="flex:1;overflow:auto"></div></div></div></div>
 <div id="dd"></div>
 <div id="msg"><div class="m"><div id="mt">혈액오더가 발행되었습니다</div><button id="mok">확인</button></div></div>
 <script>
-let S,HIST=[],EMG=false;const ZERO=()=>({qty:1,type:'',ord:'',urg:'',done:false,rows:[],signed:false});
+let S,HIST=[],EMG=false,URGI=false,XM=false,PEND=null;const ZERO=()=>({qty:1,type:'',ord:'',urg:'',done:false,rows:[],signed:false});
 const OPT={
  type:()=>[['RBC',1],['FFP',1],['Platelet',0],['Cryoprecipitate',0],['자가혈액 및 지정혈액',0],['기타',0]],
  ord:()=>S.type==='FFP'?[['',1],['FFP',1],['FFP (RT)',0]]:[['',1],['RBC',1],['RBC (LD)',0],['RBC (LD and RT)',0],['RBC (RT)',0],['RBC (신생아분할 LD and RT)',0],['Washed RBC',0],['Washed RBC (RT)',0]],
@@ -350,7 +357,7 @@ function render(){
  h+=`<div class="lf"><span class="bt dis">도움말</span><span class="bt ${o?'act':'dis'}" id="cp">오더복사</span></div>`;
  $('#lp').innerHTML=h;
  let g=`<div class="gr h">처방명</div>`;
- S.rows.forEach((r,i)=>g+=`<div class="gr" ${r.d?'style="opacity:.45"':''}><i class="ck ${r.c?'on':''}" ${r.d?'':`data-ck="${i}"`} style="cursor:pointer"></i><span>📄</span><span ${r.d?'style="text-decoration:line-through"':''}>${r.t}</span></div>`);
+ S.rows.forEach((r,i)=>g+=`<div class="gr" ${r.d?'style="opacity:.45"':''}><i class="ck ${r.c?'on':''}" ${r.d?'':`data-ck="${i}"`} style="cursor:pointer"></i><span>📄</span><span ${r.d?'style="text-decoration:line-through"':`data-ck="${i}" style="cursor:pointer"`}>${r.t}</span></div>`);
  g+=`<div class="gr"><i class="ck on"></i><span>📄</span></div>`;
  $('#gd').innerHTML=g;
  const can=S.rows.some(r=>!r.d)&&!S.signed;
@@ -359,7 +366,7 @@ function render(){
 const $=s=>document.querySelector(s);
 function openOrder(){S=ZERO();S.rows=HIST.map(r=>({...r,c:false}));S.signed=HIST.length>0;render();$('#ow').classList.add('show')}
 $('#wx').onclick=()=>{$('#ow').classList.remove('show');$('#dd').style.display='none'};
-$('#mok').onclick=()=>$('#msg').classList.remove('show');
+$('#mok').onclick=()=>{$('#msg').classList.remove('show');if(PEND){const p=PEND;PEND=null;showMsg(p)}};
 document.addEventListener('click',e=>{
  const dd=$('#dd');
  const el=e.target.closest('[data-dd]');
@@ -384,10 +391,14 @@ document.addEventListener('click',e=>{
  if(ck){const r=S.rows[+ck.dataset.ck];r.c=!r.c;render();return}
  if(e.target.closest('#dcb:not(.dis)')){S.rows.forEach(r=>{if(r.c){r.d=true;r.c=false}});HIST=S.rows.filter(r=>r.s);render();showMsg('오더발행이 D/C되었습니다.');return}
  if(e.target.closest('#cp.act')){clampQ();
-  S.rows.push({c:false,u:S.urg,t:`${S.urg?'['+S.urg+'] ':''}${S.ord} X ${S.qty}[수술예정일: 2026-10-16] 혈액요청시각:즉시(ASAP)`});
+  S.rows.push({c:false,u:S.urg,n:(S.urg?'['+S.urg+'] ':'')+S.ord,q:S.qty,t:`${S.urg?'['+S.urg+'] ':''}${S.ord} X ${S.qty}[수술예정일: 2026-10-16] 혈액요청시각:즉시(ASAP)`});
   S.type='';S.ord='';S.urg='';S.qty=1;S.done=true;S.signed=false;render();
  }
- if(e.target.closest('#sg:not(.dis)')){if(!EMG&&S.rows.some(r=>!r.d&&!r.s&&r.u)){showMsg('응급수혈 동의서가 작성되지 않았습니다');return}S.signed=true;S.rows.forEach(r=>r.s=true);HIST=S.rows.slice();render();showMsg('혈액오더가 발행되었습니다')}
+ if(e.target.closest('#sg:not(.dis)')){if(!EMG&&S.rows.some(r=>!r.d&&!r.s&&r.u==='응급')){showMsg('응급수혈 동의서가 작성되지 않았습니다');return}
+  const ur=S.rows.filter(r=>!r.d&&!r.s&&(r.u==='긴급'||r.u==='초긴급'));
+  if(ur.length){if(URGI||ur.reduce((a,r)=>a+r.q,0)>5){showMsg('긴급/초긴급 오더는 1일 1회, 최대 5개까지 가능합니다!');return}URGI=true}
+  const xm=!XM&&S.rows.some(r=>!r.d&&!r.s&&r.u==='응급'&&/RBC/.test(r.n));if(xm)XM=true;
+  S.signed=true;S.rows.forEach(r=>{if(!r.s&&!r.d)addBlood(r);r.s=true});HIST=S.rows.slice();render();if(xm){PEND='혈액오더가 발행되었습니다';showMsg('Cross-matching sample 필요합니다!')}else showMsg('혈액오더가 발행되었습니다')}
 });
 const LAB={
 'Pre-OP':{d:'2026-10-15',g:'2026-10-15 08:10 [일반검사]',r:[['WBC','6.8',''],['Hb','12.1','L'],['Hct','36.5','L'],['Platelet','138','L'],['PT (INR)','1.12',''],['AST','58','H'],['ALT','52','H'],['T.bilirubin','0.9',''],['Albumin','3.9',''],['Creatinine','0.82',''],['eGFR','132',''],['Na','139',''],['K','4.1','']]},
@@ -395,12 +406,12 @@ const LAB={
 '#2 ABGA':{d:'2026-10-16',g:'2026-10-16 10:00 [현장검사]',r:[['pH','7.312','L'],['pCO₂','43.6',''],['pO₂','188.0','H'],['HCO3-','20.8','L'],['BE','-4.6','L'],['O₂SAT','99','H'],['Hct','20','L'],['Na','137',''],['K','4.9',''],['Cl','104.0',''],['Glu','165','H'],['iCa','1.02','L'],['iMg','0.60',''],['Lactate','3.4','H'],['Hb','6.8','L']]},
 '#3 ABGA':{d:'2026-10-16',g:'2026-10-16 11:00 [현장검사]',r:[['pH','7.361',''],['pCO₂','40.5',''],['pO₂','176.0','H'],['HCO3-','22.6',''],['BE','-1.5',''],['O₂SAT','99','H'],['Hct','26','L'],['Na','138',''],['K','4.6',''],['Cl','105.0',''],['Glu','148','H'],['iCa','0.96','L'],['iMg','0.55','L'],['Lactate','1.8',''],['Hb','8.6','L']]}};
 const VW=new Set();function showLab(k){if(k)VW.add(k);
- $('#lts').innerHTML=Object.keys(LAB).filter((n,i)=>i<LABN&&(i===0||VW.has(Object.keys(LAB)[i-1]))).map(n=>`<button class="${n===k?'a':''}" data-lt="${n}">${n}</button>`).join('');
+ $('#lts').innerHTML=Object.keys(LAB).filter((n,i)=>i<LABN&&(i<2||VW.has(Object.keys(LAB)[i-1]))).map(n=>`<button class="${n===k?'a':''}" data-lt="${n}">${n}</button>`).join('');
  if(!k){$('#lb').innerHTML='<table class="lt"><tr><th>검사일시</th><th>접수일</th><th>결과일</th><th>검사명</th><th>결과</th></tr></table><div style="text-align:center;color:var(--mut);padding:60px 0;opacity:.6">위 메뉴에서 조회할 검사를 선택하세요</div>';return}
  const L=LAB[k];
  $('#lb').innerHTML=`<table class="lt"><tr><th>검사일시</th><th>접수일</th><th>결과일</th><th>검사명</th><th>결과</th></tr>`+L.r.map((r,i)=>`<tr>${i?'':`<td class="g" rowspan="${L.r.length}">${L.g}</td>`}<td>${L.d}</td><td>${L.d}</td><td class="${r[2]}">${r[0]}</td><td class="${r[2]}">${r[1]}</td></tr>`).join('')+'</table>';
 }
-let LABN=0;function openLab(){LABN=Math.min(LABN+1,4);showLab(null);show('#lw',true)}
+let LABN=1;function openLab(){LABN=Math.min(LABN+1,4);showLab(null);show('#lw',true)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-lt]');if(b)showLab(b.dataset.lt);if(e.target.closest('.lx'))show('#lw',false)});
 function grow(){const t=$('#rct'),p=$('#rcp');t.style.height='auto';const need=t.scrollHeight+2,max=p.clientHeight-20;t.style.height=Math.min(Math.max(need,140),max)+'px';t.style.overflowY=need>max?'auto':'hidden'}
 function updRec(){$('#rsg').classList.toggle('dis',!$('#rct').value.trim());grow()}
@@ -422,6 +433,23 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#rsg:not(.dis)')){const t=$('#rct');RECS.push(t.value.trim());t.value='';updRec();showRecs();showMsg('마취기록이 서명되었습니다')}
 });
 window.addEventListener('resize',()=>{if($('#rcw').classList.contains('show'))grow()});
+const BL=[];
+function addBlood(r){for(let k=1;k<=r.q;k++)BL.push({nm:r.n+(r.q>1?' ('+k+'/'+r.q+')':''),st:0,c1:'',c2:'',t1:'',t2:'',t3:'',s:''})}
+function showBl(){
+ const L=['준비시작','준비완료','인수'];
+ const ev=v=>v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+ $('#bb').innerHTML=BL.length?'<table class="lt"><tr><th>혈액</th><th>확인자1</th><th>확인자2</th><th>혈액확인시간</th><th>수혈시작시간</th><th>수혈종료시간</th><th>혈액상태</th><th></th></tr>'+BL.map((b,i)=>{const d=b.st<2?'disabled':'';const f=(k,tm)=>'<input class="bi" type="text"'+(tm?' maxlength="5" placeholder="HH:MM" inputmode="numeric"':'')+' data-bi="'+i+'" data-bf="'+k+'" value="'+ev(b[k])+'" '+d+'>';
+  return '<tr><td class="g">'+ev(b.nm)+'</td><td>'+f('c1')+'</td><td>'+f('c2')+'</td><td>'+f('t1',1)+'</td><td>'+f('t2',1)+'</td><td>'+f('t3',1)+'</td><td><select class="bi" data-bi="'+i+'" data-bf="s" '+d+'><option value=""></option><option value="수혈완료"'+(b.s?' selected':'')+'>수혈완료</option></select></td><td><button class="bb '+(b.st===2?'k':'')+'" data-bs="'+i+'">'+L[b.st]+'</button></td></tr>'}).join('')+'</table>':'<div style="text-align:center;color:var(--mut);padding:60px 0;opacity:.6">발행된 혈액오더가 없습니다</div>';
+}
+function openBl(){showBl();show('#bw',true)}
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.bi!==undefined){if(/^t\d$/.test(t.dataset.bf)){let v=t.value.replace(/\D/g,'').slice(0,4);if(v.length>2)v=v.slice(0,2)+':'+v.slice(2);t.value=v}BL[+t.dataset.bi][t.dataset.bf]=t.value}});
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset.bi===undefined||!/^t\d$/.test(t.dataset.bf))return;const b=BL[+t.dataset.bi],f=t.dataset.bf;
+ if(t.value&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(t.value)){t.value='';b[f]='';showMsg('시간은 24시간제(예: 14:30)로 입력해 주세요!');return}
+ if(b.t1&&b.t2&&b.t1>b.t2){t.value='';b[f]='';showMsg('혈액확인시간은 수혈시작시간보다 빠르거나 같아야합니다!');return}
+ if(b.t2&&b.t3&&b.t3<b.t2){t.value='';b[f]='';showMsg('수혈종료시간은 수혈시작시간보다 늦거나 같아야합니다!')}
+});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bs]');if(b){const x=BL[+b.dataset.bs];if(x.st<2){x.st++;showBl()}}if(e.target.closest('.bx'))show('#bw',false)});
+(()=>{const d=new Date();$('#tdy').textContent='교육 시나리오 · '+d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate()+'('+'일월화수목금토'[d.getDay()]+')'})();
 function addRow(){if($('#r3'))return;$('#ct tbody').insertAdjacentHTML('beforeend','<tr id="r3"><td>3</td><td>응급수혈 동의서</td><td align="center">0</td><td align="center">0</td></tr>')}
 function showMsg(t){$('#mt').textContent=t;$('#msg').classList.add('show')}
 function clampQ(){const q=$('#qt');if(!q)return;let n=parseInt(q.value)||1;n=Math.min(99,Math.max(1,n));S.qty=n;q.value=n}
@@ -433,7 +461,7 @@ document.addEventListener('click',e=>{
  const t=e.target;
  if(t.closest('.cx'))show('#cw',false);
  if(t.closest('#lst')){show('#fw',true);$('#fck').classList.remove('on');$('#pick').classList.add('dis')}
- if(t.closest('#fck')){const c=$('#fck');c.classList.toggle('on');$('#pick').classList.toggle('dis',!c.classList.contains('on'))}
+ if(t.closest('#fck,#fnm')){const c=$('#fck');c.classList.toggle('on');$('#pick').classList.toggle('dis',!c.classList.contains('on'))}
  const op=t.closest('.opt');if(op){op.classList.toggle('on');updSg()}
  if(t.closest('.fx'))show('#fw',false);
  if(t.closest('#pick')){show('#vw',true);$('.vs').scrollTop=0;document.querySelectorAll('.opt').forEach(o=>o.classList.remove('on'));clearSig()}
